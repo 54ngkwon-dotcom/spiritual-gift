@@ -85,3 +85,84 @@
 
         window.showProfile = function() {
             document.getElementById('ui-header').style.display = 'none';
+            document.getElementById('scr-quiz').style.display = 'none';
+            document.getElementById('scr-profile').style.display = 'block';
+        };
+
+        window.finish = function() {
+            const n = document.getElementById('u-n').value;
+            const b = document.getElementById('u-b').value;
+            const p = document.getElementById('u-p').value;
+            if(!n || !b || !p) { alert("모든 항목을 입력해주세요."); return; }
+
+            let sc = new Array(19).fill(0);
+            ans.forEach((v, i) => { sc[i % 19] += (v || 0); });
+
+            let allRes = GIFTS.map((g, i) => ({ name: g.n, score: sc[i], emoji: g.e }))
+                              .sort((a, b) => b.score - a.score);
+
+            // [대표님 요청 논리 반영]
+            let valid = allRes.filter(g => g.score >= 10);
+            let highScores = valid.filter(g => g.score >= 15);
+            let displayGifts = (highScores.length >= 3) ? highScores.slice(0, 7) : valid.slice(0, 3);
+            let gap = allRes[0].score - allRes[1].score;
+
+            // --- [핵심 수정: 전송 오류 해결을 위한 no-cors 모드 적용] ---
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzajBZMjwmERcNb7AYhfspr0MBQGhiCwmRk6EeZmSCHLLE9_RCJdjGSwIvKg0VF_NgNBw/exec'; 
+            const payload = {
+                name: n, birth: b, phone: p,
+                topGifts: displayGifts.map(g => g.name + "(" + g.score + ")"),
+                gap: gap + "점",
+                allData: allRes.map(g => g.name + ":" + g.score).join(", ")
+            };
+            
+            fetch(scriptURL, { 
+                method: 'POST', 
+                mode: 'no-cors', // CORS 오류 방지
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload) 
+            }).catch(err => console.error('자동 전송 실패:', err));
+            // ------------------------------------------------------
+
+            document.getElementById('res-top-list').innerHTML = displayGifts.map((g, i) => `
+                <div class="flex justify-between items-center bg-blue-50 p-5 rounded-2xl mb-3 border border-blue-100 shadow-sm">
+                    <span class="font-bold text-blue-900 text-lg">${i+1}위: ${g.emoji} ${g.name}</span>
+                    <span class="font-black text-blue-600 text-xl">${g.score}점</span>
+                </div>
+            `).join('');
+
+            const mailBody = encodeURIComponent(`성함: ${n}\n생년: ${b}\n연락처: ${p}\n\n■ 핵심 은사 리포트\n${displayGifts.map((g,i)=>`${i+1}위: ${g.name}(${g.score}점)`).join('\n')}\n\n※ 1-2위 점수 차이: ${gap}점`);
+            window.sendMail = () => { window.location.href = `mailto:jalsanggin@hanmail.net?subject=[은사진단] ${n} 성도님 결과 리포트&body=${mailBody}`; };
+
+            document.getElementById('scr-profile').style.display = 'none';
+            document.getElementById('scr-result').style.display = 'block';
+
+            new Chart(document.getElementById('giftChart'), {
+                type: 'radar',
+                data: {
+                    labels: GIFTS.map(g => g.n),
+                    datasets: [{ label: '은사 지수', data: sc, backgroundColor: 'rgba(59, 130, 246, 0.3)', borderColor: 'rgb(59, 130, 246)', borderWidth: 3, pointBackgroundColor: 'rgb(59, 130, 246)' }]
+                },
+                options: {
+                    scales: { r: { angleLines: { color: 'rgba(0,0,0,0.1)' }, grid: { color: 'rgba(0,0,0,0.1)' }, pointLabels: { color: '#1E293B', font: { size: 11, weight: 'bold' } }, ticks: { display: false } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        };
+
+        window.saveAsImage = function() {
+            const captureArea = document.getElementById('scr-result-capture');
+            html2canvas(captureArea, { scale: 2, backgroundColor: "#F0F9FF" }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = '나의_은사발견_리포트.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        };
+
+        window.goP = function() { if (cur > 0) { cur--; window.render(); } };
+        window.goN = function() { if (cur < 132 && ans[cur] !== null) { cur++; window.render(); } };
+    </script>
+</body>
+</html>
