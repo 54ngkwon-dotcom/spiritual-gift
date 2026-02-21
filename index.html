@@ -3,84 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>은사 발견 익스페디션 v46.0</title>
+    <title>은사 발견 익스페디션 v50.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --p: #3B82F6; }
-        .zone-0 { --bg:#F0F9FF; --c:#FFFFFF; --t:#1E3A8A; } 
-        .zone-1 { --bg:#064E3B; --c:#14532D; --t:#FFFFFF; }
-        .zone-2 { --bg:#E0F2FE; --c:#FFFFFF; --t:#0369A1; }
-        .zone-3 { --bg:#FEF2F2; --c:#FFFFFF; --t:#991B1B; }
-        .zone-4 { --bg:#FFFBEB; --c:#FFFFFF; --t:#92400E; }
-        .zone-5 { --bg:#F8FAFC; --c:#FFFFFF; --t:#1E293B; }
-        .zone-6 { --bg:#F5F3FF; --c:#FFFFFF; --t:#4C1D95; }
-        .zone-7 { --bg:#1E1B4B; --c:#312E81; --t:#FFFFFF; }
-
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--bg); color: var(--t); margin: 0; transition: all 0.6s ease; overflow-x: hidden; }
-        .card-ui { background-color: var(--c) !important; color: var(--t) !important; border-radius: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.05); }
-        .ans-btn { transition: all 0.2s; font-weight: 700; cursor: pointer; border: none; border-radius: 1rem; width: 100%; padding: 1.1rem; margin-bottom: 0.75rem; display: block; text-align: center; font-size: 1rem; }
-        .ans-btn:active { transform: scale(0.97); }
-        .g0 { background: #F1F5F9; color: #64748B; border: 1px solid #E2E8F0; }
-        .g1 { background: linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%); color: #9A3412; }
-        .g2 { background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); color: #166534; }
-        .g3 { background: linear-gradient(135deg, #DBEAFE 0%, #93C5FD 100%); color: #1E40AF; border: 1px solid #60A5FA; }
+        :root { --p: #1E40AF; --p-light: #3B82F6; }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #F0F9FF; margin: 0; overflow-x: hidden; transition: background 0.6s ease; }
         
-        .m-icon { font-size: 1.4rem; filter: grayscale(1); opacity: 0.2; transition: all 0.5s; }
-        .m-step.active .m-icon { filter: grayscale(0); opacity: 1; transform: scale(1.25); }
+        /* 존(Zone)별 배경 테마 */
+        .zone-1 { --bg:#F0FFF4; --t:#065F46; } .zone-2 { --bg:#F0F9FF; --t:#1E40AF; } 
+        .zone-3 { --bg:#FFF5F5; --t:#991B1B; } .zone-4 { --bg:#FFFBEB; --t:#92400E; }
+        .zone-5 { --bg:#F8FAFC; --t:#1E293B; } .zone-6 { --bg:#F5F3FF; --t:#4C1D95; }
+        .zone-7 { --bg:#1E1B4B; --t:#FFFFFF; }
+
+        /* UI 컴포넌트 */
+        .card-ui { background: white; border-radius: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); }
+        .ans-btn { transition: all 0.2s; font-weight: 700; cursor: pointer; border-radius: 1rem; width: 100%; padding: 1.1rem; margin-bottom: 0.75rem; display: block; text-align: center; }
+        .ans-btn:active { transform: scale(0.97); }
+        .g0 { background: #F1F5F9; color: #64748B; } .g1 { background: #FFEDD5; color: #9A3412; }
+        .g2 { background: #DCFCE7; color: #166534; } .g3 { background: #DBEAFE; color: #1E40AF; }
+
+        /* 여정 트래커 */
+        .m-icon { font-size: 1.3rem; filter: grayscale(1); opacity: 0.2; transition: all 0.5s; }
+        .m-step.active .m-icon { filter: grayscale(0); opacity: 1; transform: scale(1.2); }
         .m-step.done .m-icon { filter: grayscale(0); opacity: 0.5; }
         .m-label { font-size: 0.6rem; font-weight: 900; margin-top: 2px; opacity: 0.3; }
-        .m-step.active .m-label { opacity: 1; color: var(--p); }
-        
-        .profile-input, .t-area { width: 100%; padding: 1rem; border-radius: 0.75rem; border: 2px solid #CBD5E1; background-color: #FFFFFF !important; color: #0F172A !important; font-weight: 700; margin-bottom: 1rem; font-size: 0.95rem; }
-        .grid-target { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-        .chk-item { display: flex; align-items: center; background: white; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid #DBEAFE; font-size: 0.8rem; font-weight: 700; color: #1E3A8A; transition: 0.2s; }
-        .chk-item.selected { background: #DBEAFE; border-color: #3B82F6; }
-        
-        .style-scale { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: #F8FAFC; padding: 1rem; border-radius: 1rem; border: 1px solid #E2E8F0; }
-        .scale-btn { width: 2.8rem; height: 2.8rem; border-radius: 50%; background: white; border: 2px solid #DBEAFE; font-weight: 900; color: #3B82F6; }
-        .scale-btn.active { background: #3B82F6; color: white; border-color: #3B82F6; }
+        .m-step.active .m-label { opacity: 1; color: var(--p-light); }
 
-        #ui-header, #scr-map, #scr-p-intro, #scr-passion, #scr-p-finish, #scr-g-intro, #scr-quiz, #scr-rest, #scr-s-intro, #scr-style, #scr-profile, #scr-result { display: none; }
+        /* 리포트 전용 스타일 */
+        .inbody-card { background: white; border-radius: 45px; overflow: hidden; max-width: 480px; margin: 0 auto; border: 1px solid #E2E8F0; position: relative; }
+        .header-bg { background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); }
+        .style-track { height: 26px; border-radius: 13px; position: relative; display: flex; align-items: center; padding: 0 4px; border: 1px solid rgba(0,0,0,0.1); }
+        .track-energy { background: linear-gradient(to right, #F97316, #F8FAFC 50%, #10B981); }
+        .track-work { background: linear-gradient(to right, #8B5CF6, #F8FAFC 50%, #3B82F6); }
+        .thumb-glow { width: 20px; height: 20px; border-radius: 50%; background: white; border: 3px solid #1E3A8A; box-shadow: 0 0 12px rgba(59, 130, 246, 0.8); position: absolute; transition: all 1s; }
+        
+        /* 툴팁 */
+        .gift-info-btn { width: 18px; height: 18px; background: #DBEAFE; color: #1E40AF; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; margin-left: 6px; cursor: pointer; border: 1px solid #BFDBFE; }
+        .tooltip-bubble { position: absolute; left: 50%; transform: translateX(-50%); width: 85%; background: #1E293B; color: white; padding: 16px; border-radius: 20px; font-size: 12px; line-height: 1.6; z-index: 1000; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .tooltip-bubble::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #1E293B; }
+
+        /* 기타 */
+        .t-area { width: 100%; padding: 1rem; border-radius: 1rem; border: 2px solid #E2E8F0; font-size: 0.95rem; margin-top: 0.5rem; }
+        .grid-target { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .chk-item { background: white; padding: 0.8rem; border-radius: 0.8rem; border: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 700; text-align: center; transition: 0.2s; cursor: pointer; }
+        .chk-item.selected { background: #DBEAFE; border-color: #3B82F6; color: #1E40AF; }
+        
+        #ui-header, section { display: none; }
+        #scr-intro { display: block; }
     </style>
 </head>
-<body class="zone-0">
-    <div class="relative z-10 max-w-md mx-auto min-h-screen flex flex-col p-5">
+<body>
+
+    <div class="max-w-md mx-auto min-h-screen flex flex-col p-5">
         
-        <header id="ui-header" class="flex flex-col gap-4 mb-6 pt-2 bg-white/40 p-4 rounded-[2rem] border border-white/20 backdrop-blur-sm">
+        <div id="tooltip-layer" class="tooltip-bubble"></div>
+
+        <header id="ui-header" class="flex flex-col gap-4 mb-6 pt-2 bg-white/50 p-4 rounded-[2rem] border border-white/20 backdrop-blur-md">
             <div class="flex justify-between items-center px-2">
-                <div id="i-mark-1" class="flex flex-col items-center gap-1 transition-all"><span class="text-xl">🏝️</span><span class="text-[8px] font-black opacity-30">PASSION</span></div>
-                <div class="flex-grow h-px bg-gray-200 mx-4"></div>
-                <div id="i-mark-2" class="flex flex-col items-center gap-1 transition-all"><span class="text-xl">🏜️</span><span class="text-[8px] font-black opacity-30">GIFTS</span></div>
-                <div class="flex-grow h-px bg-gray-200 mx-4"></div>
-                <div id="i-mark-3" class="flex flex-col items-center gap-1 transition-all"><span class="text-xl">🏰</span><span class="text-[8px] font-black opacity-30">STYLE</span></div>
+                <div id="i-mark-1" class="flex flex-col items-center gap-1 opacity-30"><span class="text-xl">🏝️</span><span class="text-[8px] font-black">PASSION</span></div>
+                <div class="flex-grow h-px bg-gray-200 mx-3"></div>
+                <div id="i-mark-2" class="flex flex-col items-center gap-1 opacity-30"><span class="text-xl">🏜️</span><span class="text-[8px] font-black">GIFTS</span></div>
+                <div class="flex-grow h-px bg-gray-200 mx-3"></div>
+                <div id="i-mark-3" class="flex flex-col items-center gap-1 opacity-30"><span class="text-xl">🏰</span><span class="text-[8px] font-black">STYLE</span></div>
             </div>
-            <div id="terrain-track" class="hidden flex justify-between items-start mt-2 px-1">
-                <div class="m-step text-center" id="ts-1"><div class="m-icon">🌲</div><div class="m-label">숲</div></div>
-                <div class="m-step text-center" id="ts-2"><div class="m-icon">🌊</div><div class="m-label">시내</div></div>
-                <div class="m-step text-center" id="ts-3"><div class="m-icon">⛰️</div><div class="m-label">골짜기</div></div>
-                <div class="m-step text-center" id="ts-4"><div class="m-icon">☀️</div><div class="m-label">들판</div></div>
-                <div class="m-step text-center" id="ts-5"><div class="m-icon">🌫️</div><div class="m-label">산맥</div></div>
-                <div class="m-step text-center" id="ts-6"><div class="m-icon">✨</div><div class="m-label">등성이</div></div>
-                <div class="m-step text-center" id="ts-7"><div class="m-icon">⚔️</div><div class="m-label">성전</div></div>
+            <div id="terrain-track" class="hidden flex justify-between px-1">
+                <div class="m-step" id="ts-1"><div class="m-icon">🌲</div></div>
+                <div class="m-step" id="ts-2"><div class="m-icon">🌊</div></div>
+                <div class="m-step" id="ts-3"><div class="m-icon">⛰️</div></div>
+                <div class="m-step" id="ts-4"><div class="m-icon">☀️</div></div>
+                <div class="m-step" id="ts-5"><div class="m-icon">🌫️</div></div>
+                <div class="m-step" id="ts-6"><div class="m-icon">✨</div></div>
+                <div class="m-step" id="ts-7"><div class="m-icon">⚔️</div></div>
             </div>
             <div class="w-full bg-black/5 h-1 rounded-full overflow-hidden mt-1"><div id="ui-bar" class="bg-blue-500 h-full transition-all duration-700" style="width: 0%"></div></div>
             <div class="flex justify-between items-center px-1">
-                <button onclick="window.goPrevPage()" class="text-[10px] font-black text-blue-600">← PREV</button>
-                <div id="ui-zt" class="text-[10px] font-black tracking-widest text-blue-900 uppercase">READY</div>
+                <button onclick="goPrev()" class="text-[10px] font-black text-blue-600">← PREV</button>
+                <div id="ui-zt" class="text-[10px] font-black tracking-widest text-blue-900 uppercase">EXPLORING</div>
                 <div id="ui-idx-now" class="text-[10px] font-black text-blue-400">0%</div>
             </div>
         </header>
 
         <main class="flex-grow">
-            <section id="scr-intro" class="py-8 text-center">
-                <div class="text-7xl mb-6">🧭</div>
-                <h1 class="text-3xl font-black mb-5 text-blue-900 leading-tight px-4">은사 발견<br>익스페디션</h1>
-                <div class="bg-white/60 p-6 rounded-[2rem] mb-10 border border-white/20 shadow-sm mx-auto">
+            <section id="scr-intro" class="py-12 text-center">
+                <div class="text-7xl mb-8">🧭</div>
+                <h1 class="text-3xl font-black mb-6 text-blue-900 leading-tight">은사 발견<br>익스페디션</h1>
+                <div class="bg-white/60 p-7 rounded-[2rem] mb-10 border border-white/20 shadow-sm mx-auto">
                     <p class="font-bold text-blue-800 mb-6 text-base italic leading-relaxed">"우리는 그가 만드신 바라 그리스도 예수 안에서 선한 일을 위하여 지으심을 받은 자니" (엡 2:10)</p>
-                    <p class="text-sm text-gray-700 font-medium leading-relaxed">하나님이 예비하신 당신만의 고유한 보물을 찾는 탐험, 지금 시작해볼까요?</p>
+                    <p class="text-sm text-gray-700 font-medium">하나님이 예비하신 보물을 찾는 탐험, 시작해볼까요?</p>
                 </div>
                 <button onclick="updateMap(1)" class="w-full bg-blue-600 text-white py-6 rounded-3xl font-bold text-xl shadow-xl">탐험 지도 보기 →</button>
             </section>
@@ -91,47 +103,24 @@
                 <button id="map-next-btn" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-xl mt-12">다음 단계로 →</button>
             </section>
 
-            <section id="scr-p-intro" class="py-10 text-center">
-                <div class="text-6xl mb-8">🌊</div>
-                <h2 class="text-2xl font-black mb-6 text-blue-900">사역의 동기를 찾아서</h2>
-                <div class="bg-white p-7 rounded-[2rem] mb-10 text-left shadow-sm border text-sm leading-relaxed text-gray-700">
-                    하나님은 우리 모태에서부터 <b>'거룩한 부담감'</b>과 <b>'갈망'</b>을 심어두셨습니다. 내가 무엇을 할 때 가장 행복한지 아는 것이 첫 단추입니다.
-                </div>
-                <button onclick="goPassionQuest()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-xl">열정 탐색 시작 →</button>
-            </section>
-
             <section id="scr-passion" class="py-2 pb-12">
-                <div id="passion-quest-ui">
-                    <div class="text-center mb-6">
-                        <span id="p-q-idx" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-black">QUEST 1/7</span>
-                    </div>
-                    <div id="p-q-content">
-                        </div>
-                </div>
-                <button id="p-next-btn" onclick="nextPassionStep()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-xl mt-6">다음 질문으로 →</button>
+                <div class="text-center mb-6"><span id="p-q-idx" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest">Quest 1/7</span></div>
+                <div id="p-q-content" class="min-h-[250px]"></div>
+                <button id="p-next-btn" onclick="nextPassion()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-xl mt-6">다음 질문으로 →</button>
             </section>
 
             <section id="scr-p-finish" class="py-12 text-center">
                 <div class="text-6xl mb-8">🚢</div>
-                <h2 class="text-2xl font-black mb-6 text-blue-900">제1섬 탐험 성공!</h2>
-                <div class="bg-blue-50 p-8 rounded-[2.5rem] mb-12 text-left border border-blue-100 shadow-inner text-sm leading-relaxed text-blue-800">
-                    마음의 소망들을 잘 정리했습니다. 이제 이 열정을 실현할 구체적인 <b>'도구(은사)'</b>를 찾으러 떠나볼까요?
+                <h2 class="text-2xl font-black mb-6 text-blue-900 font-black">제1섬 탐험 성공!</h2>
+                <div class="bg-blue-50 p-8 rounded-[2.5rem] mb-12 text-left text-sm leading-relaxed text-blue-800 italic">
+                    "성도님의 마음속에 담긴 소중한 소망들을 확인했습니다. 이제 이 열정을 실현할 구체적인 '도구'인 은사를 찾으러 떠나볼까요?"
                 </div>
                 <button onclick="updateMap(2)" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-xl">제2섬으로 출발 →</button>
             </section>
 
-            <section id="scr-g-intro" class="py-10 text-center">
-                <div class="text-7xl mb-8">🏜️</div>
-                <h2 class="text-2xl font-black mb-6 text-blue-900">주님이 주신 도구 찾기</h2>
-                <div class="bg-white p-7 rounded-[2rem] mb-10 text-left shadow-sm border text-sm leading-relaxed text-gray-700 font-medium">
-                    이제 7개의 지형을 통과하며 133개의 질문을 마주하게 됩니다. 질문이 많지만, 그만큼 성도님을 향한 주님의 설계가 세밀하다는 뜻이기도 합니다.
-                </div>
-                <button onclick="startGifts()" class="w-full bg-blue-600 text-white py-6 rounded-3xl font-bold text-xl shadow-xl">광야 여정 시작 →</button>
-            </section>
-
             <section id="scr-quiz" class="py-2 pb-12">
-                <div id="q-card" class="card-ui p-8 mb-8 min-h-[160px] flex items-center justify-center text-center">
-                    <h2 id="ui-q-text" class="text-lg font-bold leading-snug px-2"></h2>
+                <div id="q-card" class="card-ui p-8 mb-8 min-h-[180px] flex items-center justify-center text-center">
+                    <h2 id="ui-q-text" class="text-lg font-black leading-snug px-2"></h2>
                 </div>
                 <button onclick="window.pick(0)" class="ans-btn g0">전혀 그렇지 않다</button>
                 <button onclick="window.pick(1)" class="ans-btn g1">가끔 그렇다</button>
@@ -141,34 +130,23 @@
 
             <section id="scr-rest" class="py-10 text-center">
                 <div class="text-6xl mb-8">🏕️</div>
-                <h2 class="text-2xl font-black mb-6" style="color: var(--t) !important;">잠시 쉬어가세요</h2>
+                <h2 class="text-2xl font-black mb-6">잠시 쉬어가세요</h2>
                 <div class="bg-black/5 p-8 rounded-[2.5rem] mb-10 mx-2 text-left">
-                    <p id="rest-verse" class="font-bold mb-6 text-base leading-relaxed italic" style="color: var(--t) !important;"></p>
-                    <p id="rest-comment" class="text-base font-medium opacity-90" style="color: var(--t) !important;"></p>
+                    <p id="rest-verse" class="font-bold mb-6 text-base leading-relaxed italic"></p>
+                    <p id="rest-comment" class="text-sm font-medium opacity-80"></p>
                 </div>
-                <button onclick="window.resume()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-lg">여정 계속하기 →</button>
+                <button onclick="window.resume()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg">여정 계속하기 →</button>
             </section>
 
-            <section id="scr-s-intro" class="py-10 text-center">
-                <div class="text-7xl mb-8">🏰</div>
-                <h2 class="text-2xl font-black mb-6 text-blue-900">지혜의 성 건축하기</h2>
-                <div class="bg-white p-7 rounded-[2rem] mb-10 text-left shadow-sm border text-sm leading-relaxed text-gray-700">
-                    마지막 여정입니다. 주님이 주신 은사를 어떤 스타일로 사용하실 건가요? 성도님의 독특한 사역 방식을 확인합니다.
-                </div>
-                <button onclick="startStyle()" class="w-full bg-blue-600 text-white py-6 rounded-3xl font-bold text-xl shadow-xl">스타일 진단 시작 →</button>
-            </section>
-
-            <section id="scr-style" class="py-4 pb-12">
-                <div class="text-center mb-8">
-                    <h2 id="style-step-title" class="text-xl font-black text-blue-900 mb-2"></h2>
-                    <p id="style-q-text" class="text-sm font-bold text-gray-600 leading-relaxed px-4"></p>
-                </div>
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border mb-8 border-blue-100">
-                    <div class="flex justify-between text-[10px] font-black text-blue-400 mb-4 uppercase tracking-tighter">
-                        <span id="style-left-label" class="bg-blue-50 px-2 py-1 rounded-md"></span>
-                        <span id="style-right-label" class="bg-blue-50 px-2 py-1 rounded-md"></span>
+            <section id="scr-style" class="py-4 pb-12 text-center">
+                <h2 id="style-step-title" class="text-lg font-black text-blue-900 mb-2 uppercase tracking-widest">Style Quest</h2>
+                <p id="style-q-text" class="text-sm font-bold text-gray-500 mb-8 px-4"></p>
+                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-blue-100 mb-10">
+                    <div class="flex justify-between text-[10px] font-black text-blue-400 mb-6 uppercase tracking-tighter">
+                        <span id="style-left-label" class="bg-blue-50 px-3 py-1 rounded-full"></span>
+                        <span id="style-right-label" class="bg-blue-50 px-3 py-1 rounded-full"></span>
                     </div>
-                    <div class="style-scale">
+                    <div class="style-scale flex justify-between items-center px-2">
                         <button onclick="pickStyle(1)" class="scale-btn" id="s1">1</button>
                         <button onclick="pickStyle(2)" class="scale-btn" id="s2">2</button>
                         <button onclick="pickStyle(3)" class="scale-btn" id="s3">3</button>
@@ -179,79 +157,140 @@
             </section>
 
             <section id="scr-profile" class="py-10">
-                <h2 class="text-2xl font-black text-center mb-8 text-blue-900 text-center">탐험 기록부 작성</h2>
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-blue-100 flex flex-col gap-1 mx-1">
-                    <input type="text" id="u-n" class="profile-input" placeholder="성함">
-                    <input type="text" id="u-b" class="profile-input" placeholder="생년월일 (예: 19800101)">
-                    <input type="text" id="u-p" class="profile-input" placeholder="연락처 (예: 010-1234-5678)">
-                    <button onclick="window.finish()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg shadow-lg mt-4">최종 리포트 확인</button>
+                <h2 class="text-2xl font-black text-center mb-8 text-blue-900">탐험 기록부 작성</h2>
+                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-blue-100 flex flex-col gap-2">
+                    <input type="text" id="u-n" class="profile-input bg-gray-50 p-4 rounded-xl font-bold outline-none border-2 border-transparent focus:border-blue-300" placeholder="성함">
+                    <input type="text" id="u-b" class="profile-input bg-gray-50 p-4 rounded-xl font-bold outline-none border-2 border-transparent focus:border-blue-300" placeholder="생년월일 (예: 19800101)">
+                    <input type="text" id="u-p" class="profile-input bg-gray-50 p-4 rounded-xl font-bold outline-none border-2 border-transparent focus:border-blue-300" placeholder="연락처 (예: 010-1234-5678)">
+                    <button onclick="window.finish()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg shadow-lg mt-6">최종 리포트 확인</button>
                 </div>
             </section>
 
             <section id="scr-result" class="py-6 text-center pb-32">
-                <div id="scr-result-capture" class="p-4 rounded-[2.5rem] bg-transparent">
-                    <div class="text-6xl mb-6">🏆</div>
-                    <h2 class="text-2xl font-black mb-4 text-blue-700 text-center">나의 은사 발견 리포트</h2>
-                    
-                    <div class="bg-blue-600 text-white p-6 rounded-[2rem] shadow-lg mb-8 mx-2">
-                        <p class="text-[10px] font-bold opacity-80 mb-2 uppercase tracking-widest text-center">Ministry Style Type</p>
-                        <h3 id="res-style-type" class="text-2xl font-black text-center">산출 중...</h3>
+                <div id="report-area" class="inbody-card shadow-2xl relative text-left">
+                    <div class="header-bg p-8 pb-12 text-white">
+                        <div class="flex items-center gap-6">
+                            <div class="profile-img-slot shadow-inner">👤</div>
+                            <div class="text-left">
+                                <p class="text-[9px] font-black opacity-60 uppercase tracking-widest mb-1 text-white">Spiritual Identity</p>
+                                <h1 id="res-name" class="text-2xl font-black mb-1 text-white">권오상 성도님</h1>
+                                <p id="res-info" class="text-[10px] opacity-80 font-bold text-white">1980.01.01 | 010-1234-5678</p>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="bg-white p-7 rounded-[2rem] shadow-sm border border-blue-100 mb-8 mx-2 text-left">
-                        <p class="text-[10px] font-black text-blue-300 mb-4 uppercase tracking-widest">My Passion & Vision</p>
-                        <div id="res-passion-box" class="space-y-4 text-sm leading-relaxed"></div>
+                    <div class="p-8 border-b -mt-8 bg-white rounded-t-[3.5rem] relative z-10">
+                        <div class="text-center mb-6"><div class="text-4xl mb-2">✨🏗️💎</div><h2 class="font-black text-blue-900 uppercase text-xs tracking-widest">Personal Insights</h2></div>
+                        <div id="res-summary" class="text-[13px] leading-relaxed text-gray-700 bg-blue-50/50 p-6 rounded-3xl border border-blue-100 italic shadow-inner"></div>
                     </div>
-
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border-4 border-blue-50 mb-10 text-left">
-                        <div id="res-top-list"></div>
+                    <div class="p-8 border-b border-gray-50 bg-slate-50/30">
+                        <h2 class="font-black text-blue-900 uppercase text-xs tracking-widest mb-10 flex justify-between">Style Balance <span class="text-[10px] text-gray-400 font-bold italic">성향 분석</span></h2>
+                        <div class="space-y-12">
+                            <div>
+                                <div class="flex items-center justify-between mb-4"><div class="text-[10px] font-black text-gray-500">⚙️ 일 중심</div><div id="res-style-e-text" class="text-[11px] font-black text-blue-700 bg-blue-100 px-4 py-1 rounded-full"></div><div class="text-[10px] font-black text-blue-900">👥 사람 중심</div></div>
+                                <div class="style-track track-energy"><div id="res-dot-e" class="thumb-glow"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-4"><div class="text-[10px] font-black text-gray-500">🧭 유연함</div><div id="res-style-o-text" class="text-[12px] font-black text-blue-700 bg-blue-100 px-4 py-1 rounded-full"></div><div class="text-[10px] font-black text-blue-900">🎨 계획적</div></div>
+                                <div class="style-track track-work"><div id="res-dot-o" class="thumb-glow"></div></div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="bg-white p-6 rounded-[2.5rem] shadow-inner mb-10 border border-gray-100">
-                        <canvas id="giftChart"></canvas>
+                    <div class="p-8 border-b border-gray-50">
+                        <h2 class="font-black text-blue-900 uppercase text-xs tracking-widest mb-8">주님이 주신 은사 TOP 3</h2>
+                        <div id="res-gift-top3" class="space-y-7"></div>
+                        <div class="mt-10 pt-8 border-t border-dashed border-gray-200">
+                            <p class="text-[10px] font-black text-gray-400 uppercase mb-5 tracking-widest text-center">Additional Strengths (15pts+)</p>
+                            <div id="res-gift-extra" class="space-y-4"></div>
+                        </div>
+                        <button onclick="toggleGifts()" class="view-all-btn flex items-center justify-center gap-3">전체 은사 분석 결과 보기 <span id="arrow-icon">▼</span></button>
+                        <div id="all-gifts-list" class="space-y-3"></div>
+                    </div>
+                    <div class="p-8 border-b border-gray-50">
+                        <h2 class="font-black text-blue-900 uppercase text-xs tracking-widest mb-6">Passion Vitality</h2>
+                        <div class="mb-5 text-left"><p class="text-[9px] font-black text-gray-300 uppercase mb-2">Core Vision</p><p id="res-vision" class="text-[15px] font-bold text-gray-800 leading-relaxed border-l-4 border-blue-600 pl-4 py-1 italic"></p></div>
+                        <div id="res-tags" class="flex flex-wrap gap-1"></div>
+                    </div>
+                    <div class="p-8 bg-slate-900 text-white">
+                        <div class="flex items-center gap-2 mb-8"><span class="text-xl">🎯</span><h2 class="font-black uppercase text-xs tracking-widest text-white">Recommended Ministry</h2></div>
+                        <div id="res-dept-match" class="space-y-4"></div>
+                        <p class="text-center text-[9px] font-black opacity-30 mt-10 tracking-[0.5em] uppercase font-bold text-white">Calling Confirmed</p>
                     </div>
                 </div>
-                <div class="flex flex-col gap-4 px-6">
-                    <button onclick="window.saveAsImage()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg">이미지 저장</button>
-                    <button onclick="window.sendMail()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-lg">결과 공유</button>
+
+                <div class="mt-10 px-4 flex flex-col gap-4">
+                    <button onclick="saveAsImage()" class="w-full bg-blue-600 text-white py-5 rounded-[2.5rem] font-black shadow-xl hover:bg-blue-700 active:scale-95 transition-all">🖼️ 리포트 이미지로 저장하기</button>
+                    <button onclick="window.location.href='mailto:jalsanggin@hanmail.net'" class="w-full bg-white text-slate-900 border-2 border-slate-200 py-5 rounded-[2.5rem] font-black shadow-lg flex items-center justify-center gap-2"><span>📮</span> 사역팀에 상담 신청하기</button>
                 </div>
             </section>
         </main>
     </div>
 
     <script>
-        // [문항 데이터]
-        const Q_DATA = ["교회의 한 기관이나 한 행사를 맡아서 총괄 계획하고 편성 진행하는 일을 잘 한다.", "피부색이나 문화권이 다르더라도 잘 어울려 살 수 있다.", "물건을 잘 만지며 고치고 관리하는 일이 어렵지 않다.", "하나님에 대한 나의 생각과 느낌을 예술의 형태를 이용하여 표현하는 것을 좋아한다.", "영적인 것처럼 들리는 말에 숨어있는 잘못된 동기들을 알아챈 적이 자주 있다.", "나는 다른 사람이 곤란과 좌절에서 벗어날 수 있도록 격려하고 돕는다.", "나와 예수 그리스도의 관계에 대하여 불신자들과 말하는 것이 어렵지 않다.", "다른 성도들이 불가능하다고 생각하는 일을 위해 기도하면서 믿고 행동하는 것이 자연스럽다.", "주님으로 인해 나의 돈과 소유물을 나누어 주는 일이 자주 있다.", "앞장서서 사역하는 사람들을 뒤에서 보이지 않게 돕는 것을 잘한다.", "불시에 찾아오는 손님들도 반갑게 맞이하고 음식과 잠자리를 제공하는 것이 기쁘다.", "기도 부탁을 받으면 이를 위해 쉬지 않고 기도한다.", "성경의 요점과 중심사상을 이해하도록 내가 돕고 있다고 사람들은 내게 말한다.", "다른 사람들이 자신의 목표를 달성할 수 있도록 고무시킬 수 있다.", "몸과 마음의 장애로 고통받는 사람들과 공감하며 도움을 주려고 애쓴다.", "사람들로 하여금 자신의 잘못을 깨닫고 삶의 변화를 가져오도록 얘기해 줄 수 있다.", "남을 돌보거나 양육하는 일에 자원해서 시간을 쓴다.", "하나님의 말씀을 효과적으로 전할 수 있다.", "개인적인 다양한 삶의 문제나 혹은 영적인 문제에 관한 충고의 부탁을 종종 받는다.", "체계적으로 세부적인 면을 다루는 데 철저하고 신중하며 능숙하다.", "다른 나라나 지역, 다른 인종 공동체에서 사역하는 일에 흥미도 있고 도울 수 있다.", "여러 종류의 연장을 잘 다룬다.", "미술, 연극, 음악, 사진 등의 예술적인 기술을 개발하고 사용하는 것을 좋아한다.", "첫인상으로 사람들의 성격을 잘 파악한다.", "낙심한 사람들을 격려하고 자신감을 회복시켜 주기를 좋아한다.", "불신자들과 사ꈈ 수 있는 기회를 항상 찾는다.", "환란 중에서도 하나님께서 도우시고 공급하시는 것을 확신한다.", "하나님 나라의 사역을 위해 십일조 이상의 헌금을 한다.", "큰일 뒤에 소홀히 여길 수 있는 세부적이고 일상적인 일들이 눈에 잘 띈다.", "새로운 사람들을 만나고 그들이 환영받는다는 느낌을 주는 일들이 즐겁다.", "오랫동안 기도하며 하나님이 원하시는 기도를 하도록 인도하여 주시는 것을 자주 경험한다.", "자연적으로 알 수 없는 어떠한 사실을 성령님으로부터 받아 알게 될 때가 있다.", "다른 이들이 목표를 달성할 수 있도록 영향을 줄 수 있다.", "어려움을 겪고 있는 이들이 다시 안정을 되찾는 동안 인내심을 가지고 도울 수 있다.", "다른 사람들에게 진실을 밝히게 하는 것이 나의 의무라는 느낌을 받는다.", "방황하고 있는 신자들을 동정하며 그들을 감싸주고 싶다.", "진리가 사람의 삶에 변화를 가져올 수 있는 것을 알기 때문에 배우는데 시간을 투자할 수 있다.", "갈등이나 혼돈 가운데서 종종 간단하고도 실질적인 해결책을 발견할 때가 많다.", "어떤 목표를 세우고 이를 이루기 위한 계획이나 방안을 수립할 수 있다.", "개척교회같이 새롭게 출발하는 사역을 세우는 데 기꺼이 일익을 담당할 수 있다.", "사역에 필요한 물건을 만들기를 좋아한다.", "사람들이 자기 자신에 대한 이해, 사람들과의 관계, 그리고 하나님에 관해 보다 잘 이해할 수 있도록 예술적 표현을 통해서 돕는다.", "다른 사람들보다 먼저 거짓이나 가식을 잘 꿰뚫어 볼 수 있다.", "다른 사람들에게 하나님의 약속을 상기시켜 줌으로써 소망을 얻게 한다.", "복음의 핵심을 개인의 필요에 따라 적절히 응용하는 일을 잘 한다.", "큰 일을 성취하도록 하나님이 나를 도우시리라고 확신한다.", "더 많은 구제헌금을 하기 위해 돈 관리를 잘 한다.", "다른 사람들을 돕기 위해 기꺼이 교회 안팎의 잡일들을 스스로 하게 된다.", "다른 사람과 연결이 필요한 사람들을 하나님께서 내게로 보내신다고 진심으로 믿는다.", "나는 기도할 때 이 일이 다른 사람을 위해 중요한 사역하는 것이라고 인식한다.", "성경을 정확하고 온전히 이해하기 위하여 성경을 읽고 공부하는 일이 즐겁고 그런 일을 위해 시간을 따로 할당한다.", "다른 사람들이 능력을 최대한 발휘할 수 있게 하기 위해 필요에 따라 지도방법을 변경시킬 수 있다.", "구제불능 또는 가치가 없다고 여겨지는 사람들을 돕는 일이 즐겁다.", "성경적 원리에 어긋나는 문화적 추세나 가르침, 행사들을 담대하게 지적한다.", "그리스도인의 모임을 영적으로 인도하고 방향을 제시해 주는 일이 그리 두렵지 않고 사람들도 나를 신뢰하며 주의깊게 듣고 행하는 편이다.", "가르치는 사람의 말, 어구, 내용 등에 대해 세심히 관심을 집중한다.", "여러 가능한 방안 중에서 가장 효과적인 방안을 쉽게 골라낼 수 있다.", "어떤 일을 하는 데 필요한 자원을 찾아내고 활용하는 일을 할 수 있다.", "다른 문화나 새롭게 바뀌어진 환경에서 일 할 때 잘 적응한다.", "어떤 것을 만들기 이전에 이것이 어떻게 완성되어질 것인가를 쉽게 연상해 볼 수 있다.", "주님을 전할 수 있는 새롭고 참신한 방법(드라마, 음악, 그림, 그래픽)을 찾기 좋아한다.", "어떤 상황에서 옳고 그름을 잘 분간하는 편이다.", "믿음 생활, 가정 생활 또는 전체 삶 가운데 용단을 내려야 할 필요가 있는 사람들에게 그렇게 하는 것에 대한 확신을 줄 수 있다.", "믿지 않는 이들에게 주님을 영접하도록 권한다.", "인간의 노력만으로는 성공이 보장되지 상황에서 하나님을 의지한다.", "소득의 더 많은 부분을 헌금할 수 있도록 내 생활 방식을 절제해야겠다는 도전을 받는다.", "실제적인 작은 일 가운데서 영적인 의미를 발견한다.", "사람들이 외롭지 않다는 느낌을 가질 수 있는 장소를 만들고 싶다.", "기도에 응답하시는 하나님이신 것을 믿기 때문에 확신을 가지고 계속 기도한다.", "통찰력이 있고 진실을 금방 알 수 있다.", "목표를 세우고 이를 이루기 위해 사람이나 자원을 효과적으로 잘 사용한다.", "고통받고 있는 사람들에게 커다란 연민의 감정을 느껴서 고통스럽다.", "대부분의 행동을 옳고 그름의 견지에서 보게 되는 때가 많으며, 그릇된 것을 바로 잡아야 하겠다는 필요를 절실히 느낀다.", "내가 맡은 그리스도인 모임의 영적인 건강을 책임지는 일이 즐겁다.", "내가 알고 있는 것을 재미있게 전할 수 있는 능력이 있는 것 같다.", "누군가가 문제에 봉착하면 나는 그들에게 가장 성서적인 해결책을 제시한다.", "어떤 기관이나 사역이 보다 효과적이고 효율적으로 될 수 있는 방안을 늘 중요시한다.", "새로운 사람들을 대할 때 그들의 문화에 대해 빨리 이해하고 세심한 배려를 할 수 있다.", "나의 손재주 통해 사람들을 돕고 하나님의 일에 활력을 불어넣는다.", "하나님의 진리를 전하기 위해 여러 형태의 예술을 도입한다.", "나의 통찰력이나 관찰력을 사람들이 인정한다.", "믿음이 흔들리고 있는 이들을 크게 위로하며 강건케 한다.", "내가 기독교인인 것을 드러내고 말하며 불신자들이 내 믿음에 관해 물어오기를 원한다.", "하나님이 내 삶 속에 매일 함께 하시며 역사하시는 것을 확신한다.", "하나님의 일을 하는 사람들의 삶과 사역에 내 헌금이 큰 도움이 된다는 것을 늘 감사한다.", "해야 할 잡다한 일들을 잘 찾아내며 부탁 받지 않더라도 종종 그러한 일들을 하곤 한다.", "사람들 접대하기를 좋아하며 내 집을 다른 사람들에게 제공한다.", "도움이 필요한 경우의 이야기를 들으면 기도해야 되겠다는 강한 느낌을 받는다.", "교회 지체들 안에 매우 유용한 사실이 나중에 입증되는 어떤 생각을 내가 가장 먼저 추진한 적이 있다.", "자신의 능력을 최대한 발휘하도록 다른 이들에게 영향을 준다.", "어떤 사람의 고난이나 문제 이면에 하나님께서 진정 중요하게 여기시는 삶이 있는 것을 알 수 있다.", "정직하고 바른 말을 하는 사람들을 좋아한다.", "맡겨진 소그룹의 사람들에게 도움을 주고 지침을 주는 것을 즐긴다.", "사람들로 하여금 더 배우고 공부하고 싶은 마음이 생기도록 말씀을 통하여 도전을 줄 수 있다.", "복잡한 문제를 해결할 수 있는 실질적인 조언을 준다.", "한 기관이 어떻게 운영되고 있는지 구조나 조직을 배우기를 좋아한다.", "새로운 일을 시작할 때 오히려 호기심과 창의성이 생기며 좋아한다.", "손으로 하는 일을 잘하며 좋아한다.", "창조적이며 상상력이 풍부하다.", "성경에 위배되는 가르침이나 설교, 말씀을 분간할 수 있다.", "영적인 성장을 위해 무언가 하고 싶은 마음을 사람들에게 불어 넣기를 좋아한다.", "불신자들에게 예수님이 내게 어떠한 일을 하셨는지 담대하게 자주 말한다.", "다른 이들이 하나님을 신뢰하도록 계속 도전을 준다.", "청지기로서의 삶에 대한 결단을 통해서 풍성히 헌금한다.", "남들이 좀 더 효과적으로 일할 수 있도록 뒤에서 돕는 보조자의 역할도 기꺼이 자주 한다.", "다른 이들이 소속감을 느낄 수 있도록 힘껏 노력한다.", "기도 부탁을 받으면 영광으로 생각한다.", "말씀을 읽거나 공부할 때 그리스도의 몸에 속한 다른 이들에게 유익을 주는 성경적인 진리를 발견하게 된다.", "다른 이들이 공감하는 비전을 제시할 수 있다.", "어려운 상황 중에 있는 사람들에게 소망과 기쁨을 주기를 좋아한다.", "쉽게 받아들여지지 않거나 잘 환영을 받지 않는 장소에서라도 하나님의 진리를 선포하겠다.", "방황하는 신자들이 성도의 교제와 믿음을 되찾을 수 있도록 자연스럽게 인도할 수 있다.", "어떤 지식이나 기술을 상대방이 알아듣고 적용하기 쉽게 가르쳐 줄 수 있다.", "사람들이 실제 도움이 된다고 여겨지도록 성경의 진리를 적용할 수 있는 말을 해준다.", "앞의 행사를 미리 그려보고 가능한 문제들을 예상하여 대안을 만들어 낼 수 있다.", "교회의 여러 사역을 총괄 지휘할 수 있다.", "다른 문화권이나 다른 지역의 사람들에게 복음을 전하는 일에 깊은 열망을 가지고 있다.", "사역이나 교회에 도움이 되는 물건을 구상하고 만들 수 있다.", "명상하며 상상력이 키우기 위한 혼자만의 시간이 가끔 필요하다.", "어떤 사람이나 환경에서 마귀가 역사하고 있음을 잘 감지할 수 있다.", "사람들을 영적으로 성장시키기 위해 도전을 주거나 꾸짖어 바로 세울 수 있다.", "믿지 않는 사람들과 영적인 문제에 관한 얘기할 수 있는 기회를 찾는다.", "하나님이 축복하시는 일이라고 생각하면 반대나 비협조를 무릅쓰고라도 추진할 수 있다.", "하나님의 일을 위해 더 많이 드리기 위하여 내게 자원을 허락하셨다고 믿는다.", "도움이 필요할 때마다 선천적인 혹은 후천적인 기술을 늘 기꺼이 사용한다.", "낯선 환경 중에서라도 사람들로 하여금 편안하게 느낄 수 있도록 만들 수 있도록 만들 수 있다.", "내 기도의 직접적인 응답으로 구체적인 결과가 오는 것을 자주 본다.", "나는 성경적인 진리를 알기 위해서 많은 독서와 공부를 한다.", "목적지가 어딘지를 파악하고 사람들이 그곳에 도달할 수 있도록 잘 돕는다.", "어려워서 도움이 필요한 사람들에게 실제적인 도움을 주는 것을 좋아한다.", "죄를 볼 때마다 이것을 드러내고 그들이 회개하도록 도전하지 않으면 안 된다고 느끼며 행동한다.", "사람들이 신자로서 성장할 수 있도록 참을성 있게 그러나 흔들림 없이 양육하는 것을 좋아한다.", "다른 이들이 영적으로 또한 개인적으로 성장할 수 있도록 어떤 일들을 설명해 주는 것을 좋아한다.", "다른 사람들이 보지 못하는 문제의 해결책에 대한 통찰력이 있다."];
+        // [은사 데이터 및 커멘트 DB]
+        const Q_DATA = ["교회의 한 기관이나 한 행사를 맡아서 총괄 계획하고 편성 진행하는 일을 잘 한다.", "피부색이나 문화권이 다르더라도 잘 어울려 살 수 있다.", "물건을 잘 만지며 고치고 관리하는 일이 어렵지 않다.", "하나님에 대한 나의 생각과 느낌을 예술의 형태를 이용하여 표현하는 것을 좋아한다.", "영적인 것처럼 들리는 말에 숨어있는 잘못된 동기들을 알아챈 적이 자주 있다.", "나는 다른 사람이 곤란과 좌절에서 벗어날 수 있도록 격려하고 돕는다.", "나와 예수 그리스도의 관계에 대하여 불신자들과 말하는 것이 어렵지 않다.", "다른 성도들이 불가능하다고 생각하는 일을 위해 기도하면서 믿고 행동하는 것이 자연스럽다.", "주님으로 인해 나의 돈과 소유물을 나누어 주는 일이 자주 있다.", "앞장서서 사역하는 사람들을 뒤에서 보이지 않게 돕는 것을 잘한다.", "불시에 찾아오는 손님들도 반갑게 맞이하고 음식과 잠자리를 제공하는 것이 기쁘다.", "기도 부탁을 받으면 이를 위해 쉬지 않고 기도한다.", "성경의 요점과 중심사상을 이해하도록 내가 돕고 있다고 사람들은 내게 말한다.", "다른 사람들이 자신의 목표를 달성할 수 있도록 고무시킬 수 있다.", "몸과 마음의 장애로 고통받는 사람들과 공감하며 도움을 주려고 애쓴다.", "사람들로 하여금 자신의 잘못을 깨닫고 삶의 변화를 가져오도록 얘기해 줄 수 있다.", "남을 돌보거나 양육하는 일에 자원해서 시간을 쓴다.", "하나님의 말씀을 효과적으로 전할 수 있다.", "개인적인 다양한 삶의 문제나 혹은 영적인 문제에 관한 충고의 부탁을 종종 받는다.", "체계적으로 세부적인 면을 다루는 데 철저하고 신중하며 능숙하다.", "다른 나라나 지역, 다른 인종 공동체에서 사역하는 일에 흥미도 있고 도울 수 있다.", "여러 종류의 연장을 잘 다룬다.", "미술, 연극, 음악, 사진 등의 예술적인 기술을 개발하고 사용하는 것을 좋아한다.", "첫인상으로 사람들의 성격을 잘 파악한다.", "낙심한 사람들을 격려하고 자신감을 회복시켜 주기를 좋아한다.", "불신자들과 사귈 수 있는 기회를 항상 찾는다.", "환란 중에서도 하나님께서 도우시고 공급하시는 것을 확신한다.", "하나님 나라의 사역을 위해 십일조 이상의 헌금을 한다.", "큰일 뒤에 소홀히 여길 수 있는 세부적이고 일상적인 일들이 눈에 잘 띈다.", "새로운 사람들을 만나고 그들이 환영받는다는 느낌을 주는 일들이 즐겁다.", "오랫동안 기도하며 하나님이 원하시는 기도를 하도록 인도하여 주시는 것을 자주 경험한다.", "자연적으로 알 수 없는 어떠한 사실을 성령님으로부터 받아 알게 될 때가 있다.", "다른 이들이 목표를 달성할 수 있도록 영향을 줄 수 있다.", "어려움을 겪고 있는 이들이 다시 안정을 되찾는 동안 인내심을 가지고 도울 수 있다.", "다른 사람들에게 진실을 밝히게 하는 것이 나의 의무라는 느낌을 받는다.", "방황하고 있는 신자들을 동정하며 그들을 감싸주고 책임져주고 싶다.", "진리가 사람의 삶에 변화를 가져올 수 있는 것을 알기 때문에 배우는데 시간을 투자할 수 있다.", "갈등이나 혼돈 가운데서 종종 간단하고도 실질적인 해결책을 발견할 때가 많다.", "어떤 목표를 세우고 이를 이루기 위한 계획이나 방안을 수립할 수 있다.", "개척교회같이 새롭게 출발하는 사역을 세우는 데 기꺼이 일익을 담당할 수 있다.", "사역에 필요한 물건을 만들기를 좋아한다.", "사람들이 자기 자신에 대한 이해, 사람들과의 관계, 그리고 하나님에 관해 보다 잘 이해할 수 있도록 예술적 표현을 통해서 돕는다.", "다른 사람들보다 먼저 거짓이나 가식을 잘 꿰뚫어 볼 수 있다.", "다른 사람들에게 하나님의 약속을 상기시켜 줌으로써 소망을 얻게 한다.", "복음의 핵심을 개인의 필요에 따라 적절히 응용하는 일을 잘 한다.", "큰 일을 성취하도록 하나님이 나를 도우시리라고 확신한다.", "더 많은 구제헌금을 하기 위해 돈 관리를 잘 한다.", "다른 사람들을 돕기 위해 기꺼이 교회 안팎의 잡일들을 스스로 하게 된다.", "다른 사람과 연결이 필요한 사람들을 하나님께서 내게로 보내신다고 진심으로 믿는다.", "나는 기도할 때 이 일이 다른 사람을 위해 중요한 사역하는 것이라고 인식한다.", "성경을 정확하고 온전히 이해하기 위하여 성경을 읽고 공부하는 일이 즐겁고 그런 일을 위해 시간을 따로 할당한다.", "다른 사람들이 능력을 최대한 발휘할 수 있게 하기 위해 필요에 따라 지도방법을 변경시킬 수 있다.", "구제불능 또는 가치가 없다고 여겨지는 사람들을 돕는 일이 즐겁다.", "성경적 원리에 어긋나는 문화적 추세나 가르침, 행사들을 담대하게 지적한다.", "그리스도인의 모임을 영적으로 인도하고 방향을 제시해 주는 일이 그리 두렵지 않고 사람들도 나를 신뢰하며 주의깊게 듣고 행하는 편이다.", "가르치는 사람의 말, 어구, 내용 등에 대해 세심히 관심을 집중한다.", "여러 가능한 방안 중에서 가장 효과적인 방안을 쉽게 골라낼 수 있다.", "어떤 일을 하는 데 필요한 자원을 찾아내고 활용하는 일을 할 수 있다.", "다른 문화나 새롭게 바뀌어진 환경에서 일 할 때 잘 적응한다.", "어떤 것을 만들기 이전에 이것이 어떻게 완성되어질 것인가를 쉽게 연상해 볼 수 있다.", "주님을 전할 수 있는 새롭고 참신한 방법(드라마, 음악, 그림, 그래픽)을 찾기 좋아한다.", "어떤 상황에서 옳고 그름을 잘 분간하는 편이다.", "믿음 생활, 가정 생활 또는 전체 삶 가운데 용단을 내려야 할 필요가 있는 사람들에게 그렇게 하는 것에 대한 확신을 줄 수 있다.", "믿지 않는 이들에게 주님을 영접하도록 권한다.", "인간의 노력만으로는 성공이 보장되지 상황에서 하나님을 의지한다.", "소득의 더 많은 부분을 헌금할 수 있도록 내 생활 방식을 절제해야겠다는 도전을 받는다.", "실제적인 작은 일 가운데서 영적인 의미를 발견한다.", "사람들이 외롭지 않다는 느낌을 가질 수 있는 장소를 만들고 싶다.", "기도에 응답하시는 하나님이신 것을 믿기 때문에 확신을 가지고 계속 기도한다.", "통찰력이 있고 진실을 금방 알 수 있다.", "목표를 세우고 이를 이루기 위해 사람이나 자원을 효과적으로 잘 사용한다.", "고통받고 있는 사람들에게 커다란 연민의 감정을 느껴서 고통스럽다.", "대부분의 행동을 옳고 그름의 견지에서 보게 되는 때가 많으며, 그릇된 것을 바로 잡아야 하겠다는 필요를 절실히 느낀다.", "내가 맡은 그리스도인 모임의 영적인 건강을 책임지는 일이 즐겁다.", "내가 알고 있는 것을 재미있게 전할 수 있는 능력이 있는 것 같다.", "누군가가 문제에 봉착하면 나는 그들에게 가장 성서적인 해결책을 제시한다.", "어떤 기관이나 사역이 보다 효과적이고 효율적으로 될 수 있는 방안을 늘 중요시한다.", "새로운 사람들을 대할 때 그들의 문화에 대해 빨리 이해하고 세심한 배려를 할 수 있다.", "나의 손재주 통해 사람들을 돕고 하나님의 일에 활력을 불어넣는다.", "하나님의 진리를 전하기 위해 여러 형태의 예술을 도입한다.", "나의 통찰력이나 관찰력을 사람들이 인정한다.", "믿음이 흔들리고 있는 이들을 크게 위로하며 강건케 한다.", "내가 기독교인인 것을 드러내고 말하며 불신자들이 내 믿음에 관해 물어오기를 원한다.", "하나님이 내 삶 속에 매일 함께 하시며 역사하시는 것을 확신한다.", "하나님의 일을 하는 사람들의 삶과 사역에 내 헌금이 큰 도움이 된다는 것을 늘 감사한다.", "해야 할 잡다한 일들을 잘 찾아내며 부탁 받지 않더라도 종종 그러한 일들을 하곤 한다.", "사람들 접대하기를 좋아하며 내 집을 다른 사람들에게 제공한다.", "도움이 필요한 경우의 이야기를 들으면 기도해야 되겠다는 강한 느낌을 받는다.", "교회 지체들 안에 매우 유용한 사실이 나중에 입증되는 어떤 생각을 내가 가장 먼저 추진한 적이 있다.", "자신의 능력을 최대한 발휘하도록 다른 이들에게 영향을 준다.", "어떤 사람의 고난이나 문제 이면에 하나님께서 진정 중요하게 여기시는 삶이 있는 것을 알 수 있다.", "정직하고 바른 말을 하는 사람들을 좋아한다.", "맡겨진 소그룹의 사람들에게 도움을 주고 지침을 주는 것을 즐긴다.", "사람들로 하여금 더 배우고 공부하고 싶은 마음이 생기도록 말씀을 통하여 도전을 줄 수 있다.", "복잡한 문제를 해결할 수 있는 실질적인 조언을 준다.", "한 기관이 어떻게 운영되고 있는지 구조나 조직을 배우기를 좋아한다.", "새로운 일을 시작할 때 오히려 호기심과 창의성이 생기며 좋아한다.", "손으로 하는 일을 잘하며 좋아한다.", "창조적이며 상상력이 풍부하다.", "성경에 위배되는 가르침이나 설교, 말씀을 분간할 수 있다.", "영적인 성장을 위해 무언가 하고 싶은 마음을 사람들에게 불어 넣기를 좋아한다.", "불신자들에게 예수님이 내게 어떠한 일을 하셨는지 담대하게 자주 말한다.", "다른 이들이 하나님을 신뢰하도록 계속 도전을 준다.", "청지기로서의 삶에 대한 결단을 통해서 풍성히 헌금한다.", "남들이 좀 더 효과적으로 일할 수 있도록 뒤에서 돕는 보조자의 역할도 기꺼이 자주 한다.", "다른 이들이 소속감을 느낄 수 있도록 힘껏 노력한다.", "기도 부탁을 받으면 영광으로 생각한다.", "말씀을 읽거나 공부할 때 그리스도의 몸에 속한 다른 이들에게 유익을 주는 성경적인 진리를 발견하게 된다.", "다른 이들이 공감하는 비전을 제시할 수 있다.", "어려운 상황 중에 있는 사람들에게 소망과 기쁨을 주기를 좋아한다.", "쉽게 받아들여지지 않거나 잘 환영을 받지 않는 장소에서라도 하나님의 진리를 선포하겠다.", "방황하는 신자들이 성도의 교제와 믿음을 되찾을 수 있도록 자연스럽게 인도할 수 있다.", "어떤 지식이나 기술을 상대방이 알아듣고 적용하기 쉽게 가르쳐 줄 수 있다.", "사람들이 실제 도움이 된다고 여겨지도록 성경의 진리를 적용할 수 있는 말을 해준다.", "앞의 행사를 미리 그려보고 가능한 문제들을 예상하여 대안을 만들어 낼 수 있다.", "교회의 여러 사역을 총괄 지휘할 수 있다.", "다른 문화권이나 다른 지역의 사람들에게 복음을 전하는 일에 깊은 열망을 가지고 있다.", "사역이나 교회에 도움이 되는 물건을 구상하고 만들 수 있다.", "명상하며 상상력이 키우기 위한 혼자만의 시간이 가끔 필요하다.", "어떤 사람이나 환경에서 마귀가 역사하고 있음을 잘 감지할 수 있다.", "사람들을 영적으로 성장시키기 위해 도전을 주거나 꾸짖어 바로 세울 수 있다.", "믿지 않는 사람들과 영적인 문제에 관한 얘기할 수 있는 기회를 찾는다.", "하나님이 축복하시는 일이라고 생각하면 반대나 비협조를 무릅쓰고라도 추진할 수 있다.", "하나님의 일을 위해 더 많이 드리기 위하여 내게 자원을 허락하셨다고 믿는다.", "도움이 필요할 때마다 선천적인 혹은 후천적인 기술을 늘 기꺼이 사용한다.", "낯선 환경 중에서라도 사람들로 하여금 편안하게 느낄 수 있도록 만들 수 있도록 만들 수 있다.", "내 기도의 직접적인 응답으로 구체적인 결과가 오는 것을 자주 본다.", "나는 성경적인 진리를 알기 위해서 많은 독서와 공부를 한다.", "목적지가 어딘지를 파악하고 사람들이 그곳에 도달할 수 있도록 잘 돕는다.", "어려워서 도움이 필요한 사람들에게 실제적인 도움을 주는 것을 좋아한다.", "죄를 볼 때마다 이것을 드러내고 그들이 회개하도록 도전하지 않으면 안 된다고 느끼며 행동한다.", "사람들이 신자로서 성장할 수 있도록 참을성 있게 그러나 흔들림 없이 양육하는 것을 좋아한다.", "다른 이들이 영적으로 또한 개인적으로 성장할 수 있도록 어떤 일들을 설명해 주는 것을 좋아한다.", "다른 사람들이 보지 못하는 문제의 해결책에 대한 통찰력이 있다."];
         const GIFTS = [{n:"다스림", e:"📋"}, {n:"사도", e:"✈️"}, {n:"재주", e:"🛠️"}, {n:"예능/창의", e:"🎨"}, {n:"영분별", e:"⚖️"}, {n:"권면/위로", e:"💛"}, {n:"전도", e:"📢"}, {n:"믿음", e:"⚓"}, {n:"구제/헌금", e:"🎁"}, {n:"돕는 은사", e:"🤝"}, {n:"대접/친절", e:"🏡"}, {n:"중보기도", e:"🙏"}, {n:"지식", e:"📖"}, {n:"지도력", e:"🧭"}, {n:"긍휼", e:"❤️"}, {n:"예언", e:"🔥"}, {n:"목양", e:"🌿"}, {n:"가르침", e:"📚"}, {n:"지혜", e:"💡"}];
-        const BIBLE_VERSES = [{ v: '"우리는 그가 만드신 바라 그리스도 예수 안에서 선한 일을 위하여 지으심을 받은 자니" (엡 2:10)', c: "하나님의 계획은 이미 오래전부터 준비되었답니다." }, { v: '"내가 너를 모태에 짓기 전에 너를 알았고 네가 배에서 나오기 전에 너를 성별하였고" (렘 1:5)', c: "당신의 재능과 은사를 하나님은 세심하게 설계하셨습니다." }, { v: '"너희를 향한 나의 생각을 내가 아나니 평안이요 미래와 희망을 주는 것이니라" (렘 29:11)', c: "복된 미래를 발견하는 설레는 과정입니다." }, { v: '"우리에게 주신 은혜대로 받은 은사가 각각 다르니" (롬 12:6)', c: "오직 당신만이 가진 고유한 색깔을 하나님은 기뻐하십니다." }, { v: '"은사는 여러 가지나 성령은 같고 직분은 여러 가지나 주는 같으며" (고전 12:4)', c: "각기 다른 은사들이 모여 아름다운 교회를 이룹니다." }, { v: '"내 형질이 이루어지기 전에 주의 눈이 보셨으며" (시 139:16)', c: "마지막 관문입니다! 조금만 더 힘내세요!" }];
-        const TARGETS = ["유아", "어린이", "청소년", "청년/대학생", "직장인", "신혼부부", "부모/양육자", "중장년", "노인/어르신", "독신자", "홀부모", "이혼/사별 가정", "장애인", "병입원 환자", "홈리스/노숙인", "실직자", "외국인 근로자", "군인", "수감자", "극빈자", "농어촌 지역", "다문화 가정", "해외 선교지", "기타"];
-        
-        // [열정 질문 데이터 강화]
-        const PASSION_QUESTS = [
-            { q: "1. 하나님이 모든 여건을 보장해 주신다면, 꼭 해보고 싶은 '가슴 뛰는 일'은 무엇인가요?", ex: "예: 해외 선교지 학교 설립, 지역 사회 독거노인 급식 사역 등" },
-            { q: "2. 평소 어떤 분야나 사람들을 볼 때 가장 마음이 뜨거워지거나 관심이 가시나요?", ex: "예: 다음 세대의 영적 성장, 깨어진 가정의 회복, 문화 예술 사역 등" },
-            { q: "3. 밤을 새워가며 이야기해도 지치지 않을 만큼 당신을 설레게 하는 주제는?", ex: "예: 성경적 자녀 양육, 예배의 감격 회복, 일터에서의 그리스도인 등" },
-            { q: "4. 지금까지의 삶 속에서 주님을 섬기며 가장 큰 보람과 기쁨을 느꼈던 때는 언제인가요?", ex: "예: 소그룹 리더로 한 영혼이 변화될 때, 보이지 않는 곳에서 봉사할 때 등" },
-            { q: "5. 성도님의 마음을 아프게 하거나, 개선하고 싶다는 '거룩한 부담감'을 느끼는 일은?", ex: "예: 소외된 이웃에 대한 무관심, 다음 세대 교육 환경의 부재 등" },
-            { q: "6. 성도님의 인생에서 가장 가치 있게 생각하며 지키고 싶은 핵심 가치 3가지는?", ex: "예: 정직, 사랑, 헌신, 전문성, 신실함 등" },
-            { q: "7. 하나님의 사랑으로 특별히 돕고 싶은 대상은 누구인가요? (최대 3개 선택)", ex: "" }
+        const GIFT_GUIDES = {
+            "다스림": "기획력과 조직 관리 역량이 높으신 분들입니다. 목표를 실행 가능한 계획으로 만드는 능력이 탁월합니다. 다만 일의 진척에만 치중하여 동역자의 마음을 놓치지 않도록 주의가 필요합니다.",
+            "사도": "새로운 영역을 개척하는 비전가입니다. 낯선 환경에서도 복음을 확장할 때 에너지가 넘칩니다. 기존 시스템 유지보다는 '새로운 시도'에 적합합니다.",
+            "가르침": "진리를 체계적으로 정리하여 전달하는 능력이 뛰어납니다. 남들이 이해할 때 보람을 느끼며, 지식 전달과 인격적 교감의 균형을 이룰 때 더 빛이 납니다.",
+            "긍휼": "고난당하는 자의 아픔을 민감하게 느끼는 사랑의 은사입니다. 소외된 이웃을 돌볼 때 하나님의 심장을 보여줍니다. 본인의 영적 소모가 클 수 있으니 쉼을 잊지 마세요.",
+            "지혜": "복잡한 상황에서 하나님의 관점으로 해답을 찾는 통찰력이 있습니다. 공동체의 분쟁을 중재하거나 실질적인 조언을 주는 사역에서 역량을 발휘합니다.",
+            "지식": "하나님의 진리를 탐구하고 수집하여 정확히 이해하는 은사입니다. 성경 공부 리더나 연구 사역에 적합하며, 늘 사랑 안에서 지식을 나누길 권면합니다."
+            // 나머지 은사는 '소중한 은사' 기본 멘트로 처리됩니다.
+        };
+        const DEPARTMENTS = [
+            {n:"유아부", i:"👶", r:["목양","가르침"], p:"유아"}, {n:"초등부", i:"🏫", r:["가르침","다스림"], p:"어린이"},
+            {n:"중등부", i:"📚", r:["가르침","사도"], p:"청소년"}, {n:"청년멘토", i:"🎓", r:["권면","다스림"], p:"청년"},
+            {n:"안내팀", i:"💁", r:["대접/친절","돕는 은사"], p:"모든세대"}, {n:"중보기도팀", i:"🙏", r:["중보기도"], p:"모든세대"},
+            {n:"순장", i:"🌿", r:["목양","권면"], p:"중장년"}, {n:"새가족부", i:"🤝", r:["대접/친절","전도"], p:"새신자"},
+            {n:"상담팀", i:"👂", r:["긍휼","지혜"], p:"모든세대"}, {n:"부부사역팀", i:"💍", r:["권면","목양"], p:"신혼부부"}
+        ];
+        const PASSION_Q = [
+            {q:"1. 실패의 두려움 없이 모든 것이 보장된다면, 꼭 해보고 싶은 '가슴 뛰는 일'은?", ex:"예: 선교지 학교 설립, 독거노인 급식 사역 등"},
+            {q:"2. 평소 어떤 분야나 사람들을 볼 때 마음이 뜨거워지거나 관심이 가시나요?", ex:"예: 다음 세대의 영적 성장, 깨어진 가정의 회복 등"},
+            {q:"3. 밤을 새워 이야기해도 지치지 않을 만큼 설레는 주제는?", ex:"예: 성경적 자녀 양육, 예배의 감격 회복 등"},
+            {q:"4. 지금까지의 사역 속에서 가장 큰 보람을 느꼈던 때는?", ex:"예: 한 영혼이 변화될 때, 보이지 않는 곳에서의 헌신 등"},
+            {q:"5. 마음을 아프게 하거나 개선하고 싶다는 '거룩한 부담감'을 느끼는 일은?", ex:"예: 소외된 이웃에 대한 무관심, 다음 세대 교육 환경 부재 등"},
+            {q:"6. 당신의 인생에서 가장 가치 있게 생각하는 핵심 가치 3가지는?", ex:"예: 정직, 사랑, 헌신, 전문성, 신실함 등"},
+            {q:"7. 하나님의 사랑으로 특별히 돕고 싶은 대상은? (최대 3개)", ex:""}
+        ];
+        const STYLE_Q = [
+            {t:"A. 업무 수행 방식", q:"휴가를 보내실 때 성도님은 어떤 편이신가요?", l:"즉흥적", r:"계획적"},
+            {t:"A. 업무 수행 방식", q:"지침을 세우실 때 어떤 스타일을 선호하시나요?", l:"일반적", r:"세부적"},
+            {t:"A. 업무 수행 방식", q:"작업을 진행하시는 방식은 어떠신가요?", l:"상황 따라", r:"계획 순서"},
+            {t:"A. 업무 수행 방식", q:"선호하시는 업무 스타일은 어떠신가요?", l:"다양한 일", r:"꾸준한 일"},
+            {t:"A. 업무 수행 방식", q:"무엇을 결정하실 때 어떤 성향이신가요?", l:"여지 남김", r:"결말 지음"},
+            {t:"A. 업무 수행 방식", q:"일을 하실 때 더 중요하게 여기시는 점은?", l:"임기응변", r:"규칙/절차"},
+            {t:"A. 업무 수행 방식", q:"반복되는 일상 업무에 대한 느낌은?", l:"싫증 느낌", r:"편안함 느낌"},
+            {t:"B. 에너지 획득 방식", q:"어느 때 더 편안함을 느끼시나요?", l:"혼자 작업", r:"사람 교제"},
+            {t:"B. 에너지 획득 방식", q:"사역에 집중하실 때의 주된 방향은?", l:"목표 중심", r:"관계 중심"},
+            {t:"B. 에너지 획득 방식", q:"사역의 열정이 생기는 계기는 무엇인가요?", l:"명분 이행", r:"조직 형성"},
+            {t:"B. 에너지 획득 방식", q:"최고의 성취감을 느끼는 순간은?", l:"일 완성", r:"관계 형성"},
+            {t:"B. 에너지 획득 방식", q:"회의가 시작되는 시점에 대한 생각은?", l:"정해진 시간", r:"사람 모임"},
+            {t:"B. 에너지 획득 방식", q:"업무 시 더 큰 염려가 되는 부분은?", l:"마감 준수", r:"관계 유지"},
+            {t:"B. 에너지 획득 방식", q:"사역에서 더 핵심으로 여기시는 것은?", l:"완성도", r:"대화/공감"}
         ];
 
-        const STYLE_Q = [{ t: "A. 업무 수행 방식", q: "휴가를 보내실 때 성도님은 어떤 편이신가요?", l: "즉흥적", r: "계획적" }, { t: "A. 업무 수행 방식", q: "지침을 세우실 때 어떤 방식을 선호하시나요?", l: "일반적", r: "세부적" }, { t: "A. 업무 수행 방식", q: "무엇을 결정하실 때 어떤 스타일이신가요?", l: "여지 남김", r: "결말 지음" }, { t: "A. 업무 수행 방식", q: "선호하시는 업무 스타일은 어떠신가요?", l: "다양한 일", r: "꾸준한 일" }, { t: "A. 업무 수행 방식", q: "일을 하실 때 중요하게 여기시는 것은?", l: "임기응변", r: "규칙/절차" }, { t: "A. 업무 수행 방식", q: "반복되는 일상 업무에 대한 느낌은?", l: "싫증 느낌", r: "편안함 느낌" }, { t: "A. 업무 수행 방식", q: "작업을 진행하시는 방식은 어떠신가요?", l: "상황 따라", r: "계획 순서" }, { t: "B. 에너지 획득 방식", q: "어느 때 더 편안함을 느끼시나요?", l: "혼자 작업", r: "사람 교제" }, { t: "B. 에너지 획득 방식", q: "일에 집중하실 때의 방향은?", l: "목표 중심", r: "관계 중심" }, { t: "B. 에너지 획득 방식", q: "사역의 열정이 생기는 계기는 무엇인가요?", l: "명분 이행", r: "조직 형성" }, { t: "B. 에너지 획득 방식", q: "최고의 성취감을 느끼는 순간은?", l: "일 완성", r: "관계 형성" }, { t: "B. 에너지 획득 방식", q: "회의가 시작되는 시점에 대한 생각은?", l: "정해진 시간", r: "사람 모임" }, { t: "B. 에너지 획득 방식", q: "업무 시 더 큰 염려는 무엇인가요?", l: "마감 준수", r: "관계 유지" }, { t: "B. 에너지 획득 방식", q: "사역에서 더 중요하게 여기시는 것은?", l: "완성도", r: "대화/공감" }];
-
-        let cur = 0, s_cur = 0, currentIsland = 0, p_idx = 0;
-        let ans = new Array(133).fill(null), s_ans = new Array(14).fill(0), p_ans = new Array(6).fill("");
+        // 상태 관리
+        let cur = 0, p_cur = 0, s_cur = 0, currentIsland = 0;
+        let ans = new Array(133).fill(null), p_ans = new Array(6).fill(""), s_ans = new Array(14).fill(0);
         let selectedTargets = [];
 
-        function showPage(id) { document.querySelectorAll('section').forEach(s => s.style.display = 'none'); document.getElementById(id).style.display = 'block'; window.scrollTo(0,0); }
+        // 페이지 전환 제어
+        function showPage(id) {
+            document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            window.scrollTo(0,0);
+        }
 
+        // 여정 마일스톤 업데이트
         function updateJourneyUI(island, zone = 0) {
             currentIsland = island;
             document.getElementById('ui-header').style.display = (island > 0) ? 'flex' : 'none';
             for(let i=1; i<=3; i++) { 
                 const mark = document.getElementById(`i-mark-${i}`);
                 mark.style.opacity = (i === island) ? "1" : "0.3";
-                mark.querySelector('span:last-child').classList.toggle('text-blue-600', i === island);
+                mark.classList.toggle('active', i === island);
             }
             const track = document.getElementById('terrain-track');
             if (island === 2) {
@@ -265,146 +304,167 @@
             } else track.classList.add('hidden');
         }
 
+        // 익스페디션 루트 지도
         function updateMap(step) {
             updateJourneyUI(step);
             const container = document.getElementById('map-container');
-            const items = [{ id: 1, icon: "🏝️", name: "소망의 바다", page: "scr-p-intro" }, { id: 2, icon: "🏜️", name: "능력의 광야", page: "scr-g-intro" }, { id: 3, icon: "🏰", name: "지혜의 성", page: "scr-s-intro" }];
-            container.innerHTML = items.map(item => `<div class="flex items-center gap-5 transition-all ${item.id > step ? 'opacity-30' : ''}"><div class="w-14 h-14 bg-white rounded-full flex items-center justify-center text-3xl shadow-md border-2 ${item.id === step ? 'border-blue-500 scale-110' : 'border-gray-200'}">${item.icon}</div><div><p class="text-[10px] font-black ${item.id === step ? 'text-blue-500' : 'text-gray-400'} uppercase">Island ${item.id}</p><p class="font-bold text-blue-900">${item.name}</p></div></div>${item.id < 3 ? '<div class="w-0.5 h-6 bg-blue-100 ml-7"></div>' : ''}`).join('');
-            document.getElementById('map-next-btn').onclick = () => showPage(items[step-1].page);
+            const items = [{ id: 1, icon: "🏝️", name: "소망의 바다", page: "scr-p-intro" }, { id: 2, icon: "🏜️", name: "능력의 광야", page: "scr-g-intro" }, { id: 3, icon: "🏰", name: "지혜의 성", page: "scr-style" }];
+            container.innerHTML = items.map(item => `
+                <div class="flex items-center gap-5 transition-all ${item.id > step ? 'opacity-20' : ''}">
+                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center text-3xl shadow-md border-2 ${item.id === step ? 'border-blue-500 scale-110' : 'border-gray-200'}">${item.icon}</div>
+                    <div><p class="text-[10px] font-black ${item.id === step ? 'text-blue-500' : 'text-gray-400'} uppercase">Island ${item.id}</p><p class="font-bold text-blue-900">${item.name}</p></div>
+                </div>
+                ${item.id < 3 ? '<div class="w-0.5 h-6 bg-blue-100 ml-7"></div>' : ''}
+            `).join('');
+            document.getElementById('map-next-btn').onclick = () => {
+                if(step === 1) goPassion(); else if(step === 2) startGifts(); else if(step === 3) renderStyle();
+            };
             showPage('scr-map');
         }
 
-        // [제1섬 스텝형 열정 탐색 로직]
-        window.goPassionQuest = function() {
-            p_idx = 0;
-            updateJourneyUI(1);
-            showPage('scr-passion');
-            renderPassionStep();
-        };
-
+        // [제1섬: 열정] 스텝형 로직
+        function goPassion() {
+            p_cur = 0; updateJourneyUI(1); showPage('scr-passion'); renderPassionStep();
+        }
         function renderPassionStep() {
-            const step = PASSION_QUESTS[p_idx];
-            document.getElementById('p-q-idx').innerText = `QUEST ${p_idx+1}/7`;
+            const step = PASSION_Q[p_cur];
+            document.getElementById('p-q-idx').innerText = `QUEST ${p_cur+1}/7`;
             const content = document.getElementById('p-q-content');
-            
-            if (p_idx < 6) {
-                content.innerHTML = `
-                    <label class="block font-black text-blue-900 text-base mb-4 leading-relaxed">${step.q}</label>
-                    <textarea id="p-input" class="t-area h-40" placeholder="${step.ex}">${p_ans[p_idx]}</textarea>
-                `;
+            if(p_cur < 6) {
+                content.innerHTML = `<label class="block font-black text-blue-900 text-base mb-4 leading-relaxed">${step.q}</label><textarea id="p-input" class="t-area h-40" placeholder="${step.ex}">${p_ans[p_cur]}</textarea>`;
                 document.getElementById('p-next-btn').innerText = "다음 질문으로 →";
             } else {
-                content.innerHTML = `
-                    <label class="block font-black text-blue-900 text-base mb-4">${step.q}</label>
-                    <div class="grid-target" id="target-list"></div>
-                `;
-                const container = document.getElementById('target-list');
-                container.innerHTML = TARGETS.map(t => `<div class="chk-item cursor-pointer ${selectedTargets.includes(t) ? 'selected' : ''}" onclick="toggleTarget('${t}', this)">${t}</div>`).join('');
+                content.innerHTML = `<label class="block font-black text-blue-900 text-base mb-4">${step.q}</label><div class="grid-target" id="target-list"></div>`;
+                const list = ["유아", "어린이", "청소년", "청년/대학생", "직장인", "신혼부부", "부모/양육자", "중장년", "노인/어르신", "장애인", "다문화 가정", "해외 선교지"];
+                document.getElementById('target-list').innerHTML = list.map(t => `<div class="chk-item ${selectedTargets.includes(t) ? 'selected' : ''}" onclick="toggleT('${t}', this)">${t}</div>`).join('');
                 document.getElementById('p-next-btn').innerText = "제1섬 탐험 완료 →";
             }
-            document.getElementById('ui-bar').style.width = ((p_idx + 1) / 7 * 100) + "%";
-            window.scrollTo(0,0);
+            document.getElementById('ui-bar').style.width = (p_cur+1)/7*100+"%";
+        }
+        function toggleT(t, el) {
+            const idx = selectedTargets.indexOf(t);
+            if(idx > -1) { selectedTargets.splice(idx,1); el.classList.remove('selected'); }
+            else { if(selectedTargets.length >= 3) { alert("최대 3개까지만 가능합니다."); return; } selectedTargets.push(t); el.classList.add('selected'); }
+        }
+        function nextPassion() {
+            if(p_cur < 6) { p_ans[p_cur] = document.getElementById('p-input').value; p_cur++; renderPassionStep(); }
+            else { if(selectedTargets.length===0) return alert("대상을 선택해주세요."); showPage('scr-p-finish'); }
         }
 
-        function toggleTarget(target, el) {
-            const idx = selectedTargets.indexOf(target);
-            if (idx > -1) {
-                selectedTargets.splice(idx, 1); el.classList.remove('selected');
-            } else {
-                if (selectedTargets.length >= 3) { alert("최대 3개까지만 선택하실 수 있습니다."); return; }
-                selectedTargets.push(target); el.classList.add('selected');
-            }
-        }
-
-        function nextPassionStep() {
-            if (p_idx < 6) {
-                const val = document.getElementById('p-input').value;
-                if(!val && p_idx < 5) { alert("답변을 입력해주세요."); return; }
-                p_ans[p_idx] = val;
-                p_idx++;
-                renderPassionStep();
-            } else {
-                if (selectedTargets.length === 0) { alert("돕고 싶은 대상을 선택해주세요."); return; }
-                showPage('scr-p-finish');
-            }
-        }
-
-        window.startGifts = function() { updateJourneyUI(2); showPage('scr-quiz'); window.render(); };
-        window.render = function() {
-            const zi = Math.floor(cur/19);
-            updateJourneyUI(2, zi);
-            const ZN = [{t:"zone-1",n:"부르심의 숲"}, {t:"zone-2",n:"은혜의 시내"}, {t:"zone-3",n:"연단의 골짜기"}, {t:"zone-4",n:"믿음의 들판"}, {t:"zone-5",n:"사명의 산맥"}, {t:"zone-6",n:"비전의 산등성이"}, {t:"zone-7",n:"정상: 성전"}];
-            document.body.className = ZN[zi].t;
-            document.getElementById('ui-zt').innerText = ZN[zi].n;
+        // [제2섬: 은사] 133문항 로직
+        function startGifts() { updateJourneyUI(2); showPage('scr-quiz'); renderGift(); }
+        function renderGift() {
+            const zi = Math.floor(cur/19); updateJourneyUI(2, zi);
+            const ZN = ["부르심의 숲", "은혜의 시내", "연단의 골짜기", "믿음의 들판", "사명의 산맥", "비전의 산등성이", "정상: 성전"];
+            document.body.className = `zone-${zi+1}`;
+            document.getElementById('ui-zt').innerText = ZN[zi];
             document.getElementById('ui-idx-now').innerText = `${Math.round((cur+1)/133*100)}%`;
             document.getElementById('ui-q-text').innerText = Q_DATA[cur];
-            document.getElementById('ui-bar').style.width = (cur + 1) / 133 * 100 + "%";
-        };
-
+            document.getElementById('ui-bar').style.width = (cur+1)/133*100+"%";
+        }
         window.pick = function(v) {
             ans[cur] = v;
-            if ((cur + 1) % 19 === 0 && cur < 132) {
-                const zi = Math.floor(cur/19);
-                document.getElementById('rest-verse').innerText = BIBLE_VERSES[zi].v;
-                document.getElementById('rest-comment').innerText = BIBLE_VERSES[zi].c;
-                showPage('scr-rest');
-            } else if (cur < 132) { cur++; window.render(); }
+            if((cur+1)%19===0 && cur<132) showRest();
+            else if(cur < 132) { cur++; renderGift(); }
             else updateMap(3);
-        };
+        }
+        function showRest() {
+            const zi = Math.floor(cur/19);
+            const verses = ["엡 2:10 하나님의 작품", "렘 1:5 너를 알았고", "렘 29:11 미래와 희망", "롬 12:6 은사가 각각 다르니", "고전 12:4 은사는 여러 가지나", "시 139:16 마지막 관문!"];
+            document.getElementById('rest-verse').innerText = verses[zi];
+            showPage('scr-rest');
+        }
+        window.resume = function() { cur++; showPage('scr-quiz'); renderGift(); }
 
-        window.resume = function() { showPage('scr-quiz'); cur++; window.render(); };
-
-        function startStyle() { updateJourneyUI(3); showPage('scr-style'); renderStyle(); }
+        // [제3섬: 스타일] 로직
         function renderStyle() {
+            updateJourneyUI(3); showPage('scr-style');
             const q = STYLE_Q[s_cur];
-            document.getElementById('style-step-title').innerText = q.t;
             document.getElementById('style-q-text').innerText = q.q;
             document.getElementById('style-left-label').innerText = q.l;
             document.getElementById('style-right-label').innerText = q.r;
             document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('ui-bar').style.width = (s_cur + 1) / 14 * 100 + "%";
+            document.getElementById('ui-bar').style.width = (s_cur+1)/14*100+"%";
             document.getElementById('ui-idx-now').innerText = `${s_cur+1}/14`;
         }
-        function pickStyle(val) {
-            s_ans[s_cur] = val; document.getElementById('s'+val).classList.add('active');
-            setTimeout(() => { if (s_cur < 13) { s_cur++; renderStyle(); } else showPage('scr-profile'); }, 200);
+        window.pickStyle = function(v) {
+            s_ans[s_cur] = v; document.getElementById('s'+v).classList.add('active');
+            setTimeout(() => { if(s_cur < 13) { s_cur++; renderStyle(); } else showPage('scr-profile'); }, 200);
         }
 
+        // [최종 리포트 생성 및 전송]
         window.finish = function() {
             const n = document.getElementById('u-n').value, b = document.getElementById('u-b').value, p = document.getElementById('u-p').value;
-            if(!n || !b || !p) { alert("항목을 모두 입력해주세요."); return; }
+            if(!n || !b || !p) return alert("필수 정보를 입력하세요.");
 
-            const oScore = s_ans.slice(0, 7).reduce((a,b)=>a+b, 0), eScore = s_ans.slice(7, 14).reduce((a,b)=>a+b, 0);
-            const finalType = `${eScore >= 21 ? "사람 중심" : "일 중심"} / ${oScore >= 21 ? "계획적" : "유연한"}형`;
+            // 1. 스타일 계산
+            const eScore = s_ans.slice(7,14).reduce((a,b)=>a+b,0), oScore = s_ans.slice(0,7).reduce((a,b)=>a+b,0);
+            const ePct = Math.round(eScore/35*100), oPct = Math.round(oScore/35*100);
+            const eType = ePct >= 60 ? "사람 중심" : (ePct <= 40 ? "일 중심" : "중립");
+            const oType = oPct >= 60 ? "계획적" : (oPct <= 40 ? "유연함" : "중립");
 
-            // [결과 리포트 통합 시각화]
-            document.getElementById('res-style-type').innerText = finalType;
-            document.getElementById('res-passion-box').innerHTML = `
-                <div class="border-b pb-3"><p class="font-black text-blue-900 mb-1 text-xs uppercase">Vision</p><p class="text-gray-600 text-sm">"${p_ans[0]}"</p></div>
-                <div class="border-b pb-3"><p class="font-black text-blue-900 mb-1 text-xs uppercase">Motivation</p><p class="text-gray-600 text-sm">관심: ${p_ans[1]} / 설렘: ${p_ans[2]}</p></div>
-                <div><p class="font-black text-blue-900 mb-1 text-xs uppercase">Targets</p><p class="text-blue-600 font-bold text-sm">${selectedTargets.join(", ")}</p></div>
-            `;
+            // 2. 은사 계산
+            let sc = new Array(19).fill(0); ans.forEach((v, i) => { sc[i%19] += (v||0); });
+            let allRes = GIFTS.map((g, i) => ({ name: g.n, score: sc[i], emoji: g.e })).sort((a,b)=>b.score - a.score);
+            const top3 = allRes.slice(0,3);
+            const extra = allRes.filter((g,i)=> i>=3 && g.score >= 15).slice(0,5);
 
-            let sc = new Array(19).fill(0); ans.forEach((v, i) => { sc[i % 19] += (v || 0); });
-            let allRes = GIFTS.map((g, i) => ({ name: g.n, score: sc[i], emoji: g.e })).sort((a, b) => b.score - a.score);
-            let displayGifts = allRes.filter(g => g.score >= 10).slice(0, 7);
-
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzajBZMjwmERcNb7AYhfspr0MBQGhiCwmRk6EeZmSCHLLE9_RCJdjGSwIvKg0VF_NgNBw/exec';
-            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ name: n, birth: b, phone: p, topGifts: displayGifts.map(g => `${g.name}(${g.score})`), passion: p_ans.join(" | ") + " | 대상:" + selectedTargets.join(","), style: finalType, allData: allRes.map(g => `${g.name}:${g.score}`).join(", ") }) });
-
-            document.getElementById('res-top-list').innerHTML = displayGifts.map((g, i) => `<div class="flex justify-between items-center bg-blue-50 p-5 rounded-2xl mb-3 border-l-4 border-blue-500 shadow-sm"><span class="font-bold text-blue-900">${i+1}위: ${g.emoji} ${g.name}</span><span class="font-black text-blue-600">${g.score}점</span></div>`).join('');
+            // 리포트 렌더링
+            document.getElementById('res-name').innerText = n;
+            document.getElementById('res-info').innerText = `${b} | ${p}`;
+            document.getElementById('res-summary').innerHTML = `성도님은 <b>${top3[0].name}</b>의 은사와 <b>${selectedTargets[0] || '영혼'}</b>을 향한 열정을 가지셨군요. <b>${eType} / ${oType}</b>의 스타일로 공동체를 세워갈 하나님의 계획을 기대합니다!`;
             
-            showPage('scr-result');
-            new Chart(document.getElementById('giftChart'), { type: 'radar', data: { labels: GIFTS.map(g => g.n), datasets: [{ data: sc, backgroundColor: 'rgba(59, 130, 246, 0.3)', borderColor: 'rgb(59, 130, 246)', borderWidth: 2 }] }, options: { scales: { r: { pointLabels: { font: { size: 9, weight: 'bold' } }, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
-        };
+            document.getElementById('res-style-e-text').innerText = `${eType} ${ePct}%`;
+            document.getElementById('res-dot-e').style.left = ePct + "%";
+            document.getElementById('res-style-o-text').innerText = `${oType} ${oPct}%`;
+            document.getElementById('res-dot-o').style.left = oPct + "%";
 
-        window.saveAsImage = function() { html2canvas(document.getElementById('scr-result-capture'), { scale: 2, backgroundColor: "#F0F9FF" }).then(canvas => { const link = document.createElement('a'); link.download = '나의_은사발견_리포트.png'; link.href = canvas.toDataURL(); link.click(); }); };
-        
-        window.goPrevPage = function() {
-            if (currentIsland === 1 && p_idx > 0) { p_idx--; renderPassionStep(); }
-            else if (currentIsland === 2 && cur > 0) { cur--; window.render(); }
-            else if (currentIsland === 3 && s_cur > 0) { s_cur--; renderStyle(); }
-        };
+            document.getElementById('res-gift-top3').innerHTML = top3.map(g => `
+                <div class="relative">
+                    <div class="flex items-center mb-2"><span class="text-[13px] font-black text-blue-900">${g.name} ${g.emoji}</span><div class="gift-info-btn" onclick="showTip(this, '${g.name}')">?</div></div>
+                    <div class="flex items-center"><div class="bar-container ml-0 bg-blue-50"><div class="bar-fill bg-blue-600 shadow-md" style="width:${g.score/28*100}%"></div></div><span class="w-6 text-right font-black text-blue-600 text-xs">${g.score}</span></div>
+                </div>`).join('');
+
+            document.getElementById('res-gift-extra').innerHTML = extra.map(g => `<div class="flex justify-between text-[11px] font-bold text-gray-500"><span>${g.name} ${g.emoji}</span><span>${g.score}점</span></div>`).join('');
+            document.getElementById('all-gifts-list').innerHTML = allRes.map(g => `<div class="flex justify-between px-4 text-[11px] text-gray-400"><span>${g.name}</span><span>${g.score}점</span></div>`).join('');
+
+            document.getElementById('res-vision').innerText = p_ans[0] || "하나님 나라의 확장";
+            document.getElementById('res-tags').innerHTML = selectedTargets.map(t => `<span class="tag bg-blue-50 text-blue-800 border border-blue-100">#${t}</span>`).join('');
+
+            // 사역 매칭
+            const matched = DEPARTMENTS.filter(d => top3.some(g => d.r.includes(g.name))).slice(0,2);
+            document.getElementById('res-dept-match').innerHTML = matched.map(d => `
+                <div class="bg-white/10 p-5 rounded-[2rem] flex items-center justify-between border border-white/10">
+                    <div class="flex items-center gap-4"><div class="dept-icon text-blue-600">${d.i}</div><div><h3 class="font-black text-white text-base">${d.n}</h3><p class="text-[10px] opacity-60">추천 은사: ${d.r.join(",")}</p></div></div>
+                    <span class="text-blue-400 font-black text-xs uppercase">BEST FIT</span>
+                </div>`).join('');
+
+            showPage('scr-result');
+
+            // 스프레드시트 전송
+            const payload = { name:n, birth:b, phone:p, passion: p_ans.join("|"), style: `${eType}/${oType}`, gifts: top3.map(g=>g.name).join(",") };
+            fetch('https://script.google.com/macros/s/AKfycbzajBZMjwmERcNb7AYhfspr0MBQGhiCwmRk6EeZmSCHLLE9_RCJdjGSwIvKg0VF_NgNBw/exec', { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        }
+
+        // 유틸리티 함수
+        function toggleGifts() { document.getElementById('all-gifts-list').classList.toggle('open'); }
+        function showTip(el, name) {
+            const tip = document.getElementById('tooltip-layer');
+            tip.innerHTML = `<p class='font-black text-blue-400 mb-1'>[${name}] 은사 가이드</p>${GIFT_GUIDES[name] || "주님이 주신 보물입니다. 사역팀과 상담해 보세요."}`;
+            const rect = el.getBoundingClientRect();
+            tip.style.top = (rect.top + window.scrollY - tip.offsetHeight - 15) + 'px';
+            tip.style.display = 'block';
+            setTimeout(() => { document.addEventListener('click', () => tip.style.display='none', {once:true}); }, 10);
+        }
+        async function saveAsImage() {
+            const canvas = await html2canvas(document.getElementById('report-area'), { scale:3, useCORS:true, backgroundColor: "#F0F4F8" });
+            const link = document.createElement('a'); link.download = '영적_인바디_리포트.png'; link.href = canvas.toDataURL(); link.click();
+        }
+        function goPrev() {
+            if(currentIsland===1 && p_cur>0) { p_cur--; renderPassionStep(); }
+            else if(currentIsland===2 && cur>0) { cur--; renderGift(); }
+            else if(currentIsland===3 && s_cur>0) { s_cur--; renderStyle(); }
+        }
     </script>
 </body>
 </html>
